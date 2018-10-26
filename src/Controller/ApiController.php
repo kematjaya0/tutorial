@@ -1,11 +1,4 @@
 <?php
-/**
- * perubahan 
- * 1. composer require jms/serializer-bundle
- * 2. composer require friendsofsymfony/rest-bundle
- * 3. composer require white-october/pagerfanta-bundle
- * 4. composer require symfony/form
- */
 namespace App\Controller;
 
 use App\Entity\MCategory;
@@ -14,7 +7,7 @@ use App\Form\MCategoryType;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-
+use Symfony\Component\Translation\TranslatorInterface;
 /**
  * @Route("/api/test")
  */
@@ -23,8 +16,9 @@ class ApiController extends BaseController
     /**
      * @Route("/", name="api_index")
      */
-    public function index(Request $request)
+    public function index(Request $request, TranslatorInterface $translator)
     {
+        return $translator->trans('test');
         $queryBuilder = $this->getQueryBuilder(MCategory::class);
         $paginator = $this->createPaginator($request, $queryBuilder->getQuery());
         return $this->getPaginationData($paginator);

@@ -1,0 +1,4 @@
+test: Hai, ini latihan symfony framework
+save_success: Data berhasil disimpan
+update_success: Data berhasil diubah
+delete_success: Data berhasil dihapus
