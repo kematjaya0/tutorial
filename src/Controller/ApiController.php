@@ -16,9 +16,8 @@ class ApiController extends BaseController
     /**
      * @Route("/", name="api_index")
      */
-    public function index(Request $request, TranslatorInterface $translator)
+    public function index(Request $request)
     {
-        return $translator->trans('test');
         $queryBuilder = $this->getQueryBuilder(MCategory::class);
         $paginator = $this->createPaginator($request, $queryBuilder->getQuery());
         return $this->getPaginationData($paginator);
@@ -27,7 +26,7 @@ class ApiController extends BaseController
     /**
      * @Route("/insert", name="api_insert", methods={"GET","POST"})
      */
-    public function insert(Request $request, ValidatorInterface $validator)
+    public function insert(Request $request, ValidatorInterface $validator, TranslatorInterface $translator)
     {
         $MCategory = new MCategory(); // membuat object MCategory
         if($request->getMethod() == Request::METHOD_POST) { // jalankan jika method POST
@@ -38,8 +37,8 @@ class ApiController extends BaseController
                 return $this->getResponseSuccess($MCategory);
             }
 
-            $result =["status" => true, "messages" => 'data saved successfully'];
-            return $this->getResponseSuccess($MCategory);
+            $result =["status" => true, "data" => $MCategory, "messages" => $translator->trans('save_success')];
+            return $this->getResponseSuccess($result);
         }
         $form = $this->createFormApi(MCategoryType::class, $MCategory); // membuat data form untuk ditampilkan ke user
         return $form;
@@ -48,7 +47,7 @@ class ApiController extends BaseController
     /**
      * @Route("/update/{id}", name="api_update", methods={"GET","POST"})
      */
-    public function update(MCategory $MCategory, Request $request)
+    public function update(MCategory $MCategory, Request $request, TranslatorInterface $translator)
     {
         if($request->getMethod() == Request::METHOD_POST) { // jalankan jika method == POST
             $form = $this->createForm(MCategoryType::class, $MCategory); // membuat object form untuk melakukan proses data
@@ -58,8 +57,8 @@ class ApiController extends BaseController
                 return $this->getResponseSuccess($MCategory); // tampilkan pesan error jika ada error
             }
 
-            $result =["status" => true, "messages" => 'data saved successfully'];
-            return $this->getResponseSuccess($MCategory);
+            $result =["status" => true, "data" => $MCategory, "messages" => $translator->trans('update_success')];
+            return $this->getResponseSuccess($result);
         }
         $form = $this->createFormApi(MCategoryType::class, $MCategory);
         return $this->getResponseSuccess($form);
@@ -68,13 +67,13 @@ class ApiController extends BaseController
     /**
      * @Route("/delete/{id}", name="api_delete", methods={"DELETE"})
      */
-    public function deleted(MCategory $MCategory)
+    public function deleted(MCategory $MCategory, TranslatorInterface $translator)
     {
         // menghapus data 
         $entityManager = $this->getDoctrine()->getManager();
         $entityManager->remove($MCategory);
         $entityManager->flush();
-        $data = ['status' => true, 'messages' => 'data berhasil dihapus'];
+        $data = ['status' => true, 'messages' => $translator->trans('delete_success')];
         return $this->getResponseSuccess($data);
     }
 }

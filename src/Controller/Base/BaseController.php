@@ -87,16 +87,18 @@ class BaseController extends FOSRestController implements BaseControllerInterfac
         $con = $entityManager->getConnection();
         try{
             $con->beginTransaction();
-            $form->handleRequest($request);
-            if($form->isSubmitted() && $form->isValid()){
-                $obj = $form->getData();
+            $form->submit($request->get($form->getName()));
+            if($form->isSubmitted()){
+                if($form->isValid()) {
+                    $obj = $form->getData();
                 
-                $this->uploadFiles($obj, $form, $request);
-                $entityManager->persist($obj);
-                $entityManager->flush();
-                $con->commit();
-            }else{
-                return $this->getErrors($form);
+                    $this->uploadFiles($obj, $form, $request);
+                    $entityManager->persist($obj);
+                    $entityManager->flush();
+                    $con->commit();
+                }else{
+                    return $this->getErrors($form);
+                }
             }
         } catch (Exception $ex) {
             $con->rollback();
